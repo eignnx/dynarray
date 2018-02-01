@@ -30,8 +30,8 @@ The array is heap-allocated and is prefixed with a three-field header containing
 * The `capacity` field stores the buffer's size.
 * The `length` field keeps track of the number of elements stored in the buffer.
 
-Macros defined in [`dynarray.h`](https://github.com/eignnx/dynarray/blob/master/dynarray.h) allow the `capacity`, `length`, and `stride` attributes to be accessed.
+Macros defined in [`dynarray.h`](dynarray.h) allow the `capacity`, `length`, and `stride` attributes to be accessed.
 
 The dynarray is referred to _only_ by a pointer to the first element in the buffer. This allows the dynarray to be passed to most functions that were meant to operate on normal C-arrays.
 
-![memory layout](https://github.com/eignnx/dynarray/blob/master/images/dynarray-memory-layout.png)
+![memory layout](images/dynarray-memory-layout.png)
