@@ -34,6 +34,7 @@ void _dynarray_pop(void *arr, void *dest);
 
 #define dynarray_create(type) _dynarray_create(DYNARRAY_DEFAULT_CAP, sizeof(type))
 #define dynarray_create_prealloc(type, capacity) _dynarray_create(capacity, sizeof(type))
+#define dynarray_destroy(arr) _dynarray_destroy(arr)
 
 #define dynarray_push(arr, x) arr = _dynarray_push(arr, x)
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
