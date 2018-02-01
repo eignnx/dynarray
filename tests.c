@@ -4,14 +4,16 @@
 
 int main()
 {
-    int *ints = dynarray_create(int);
+    int *v = dynarray_create(int);
     
     for (int i = 0; i < 10; i++) {
         int temp = 10 - i;
-        dynarray_push(ints, &temp);
+        dynarray_push(v, &temp);
     }
 
-    for (int i = 0; i < 10; i++) {
-        printf("element %d:\t%d\n", i, ints[i]);
+    for (int i = 0; i < dynarray_length(v); i++) {
+        printf("v[%d] -> %d\n", i, v[i]);
     }
+
+    dynarray_destroy(v);
 }
