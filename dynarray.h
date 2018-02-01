@@ -39,7 +39,7 @@ void _dynarray_pop(void *arr, void *dest);
 #define dynarray_push(arr, x) arr = _dynarray_push(arr, &x)
 #define dynarray_push_rval(arr, x) \
     do { \
-        typeof(x) temp = x; \
+        __auto_type temp = x; \
         arr = _dynarray_push(arr, &temp); \
     } while (0)
 
