@@ -9,8 +9,8 @@ A generic dynamic array implementation in C. A dynarray of type `T` can be passe
 int *v = dynarray_create(int);
 
 for (int i = 0; i < 10; i++) {
-    int temp = 10 - i;
-    dynarray_push(v, &temp);
+    dynarray_push(v, i);
+    dynarray_push_rval(v, 100 - i);
 }
 
 for (int i = 0; i < dynarray_length(v); i++) {
@@ -21,11 +21,13 @@ dynarray_destroy(v);
 ```
 Output:
 ```
-ints[0] -> 10
-ints[1] -> 9
+v[0] -> 0
+v[1] -> 100
+v[2] -> 1
+v[3] -> 99
 ...
-ints[8] -> 2
-ints[9] -> 1
+v[18] -> 9
+v[19] -> 91
 ```
 
 ## Memory Layout
