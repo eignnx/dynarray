@@ -30,6 +30,7 @@ void *_dynarray_push(void *arr, void *xptr);
 void _dynarray_pop(void *arr, void *dest);
 
 #define DYNARRAY_DEFAULT_CAP 1
+#define DYNARRAY_RESIZE_FACTOR 2
 
 #define dynarray_create(type) _dynarray_create(DYNARRAY_DEFAULT_CAP, sizeof(type))
 #define dynarray_create_prealloc(type, capacity) _dynarray_create(capacity, sizeof(type))

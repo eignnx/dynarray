@@ -50,7 +50,10 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 // the values that the original stored.
 void *_dynarray_resize(void *arr)
 {
-    void *temp = _dynarray_create(2 * dynarray_capacity(arr), dynarray_stride(arr)); // Reallocate
+    void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
+        DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr),
+        dynarray_stride(arr)
+    );
     memcpy(temp, arr, dynarray_length(arr) * dynarray_stride(arr)); // Copy erythin' over.
     _dynarray_field_set(temp, LENGTH, dynarray_length(arr)); // Set `length` field.
     _dynarray_destroy(arr); // Free previous array.
