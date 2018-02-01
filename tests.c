@@ -8,7 +8,7 @@ int main()
     
     for (int i = 0; i < 10; i++) {
         int temp = 10 - i;
-        ints = dynarray_push(ints, &temp);
+        dynarray_push(ints, &temp);
     }
 
     for (int i = 0; i < 10; i++) {
