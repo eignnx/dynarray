@@ -7,8 +7,8 @@ int main()
     int *v = dynarray_create(int);
     
     for (int i = 0; i < 10; i++) {
-        int temp = 10 - i;
-        dynarray_push(v, &temp);
+        dynarray_push(v, i);
+        dynarray_push_rval(v, 100 - i);
     }
 
     for (int i = 0; i < dynarray_length(v); i++) {
