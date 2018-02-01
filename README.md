@@ -6,21 +6,26 @@ A generic dynamic array implementation in C.
 ```c
 #include "dynarray.h"
 
-int *ints = dynarray_create(int);
+int *v = dynarray_create(int);
 
-for (int i = 0; i < 10; i++)
-    dynarray_push(ints, &i);
+for (int i = 0; i < 10; i++) {
+    int temp = 10 - i;
+    dynarray_push(v, &temp);
+}
 
-for (int i = 0; i < dynarray_length(ints); i++)
-    printf("ints[%d] -> %d\n", ints[i]);
+for (int i = 0; i < dynarray_length(v); i++) {
+    printf("v[%d] -> %d\n", i, v[i]);
+}
+
+dynarray_destroy(v);
 ```
 Output:
 ```
-ints[0] -> 0
-ints[1] -> 1
+ints[0] -> 10
+ints[1] -> 9
 ...
-ints[8] -> 8
-ints[9] -> 9
+ints[8] -> 2
+ints[9] -> 1
 ```
 
 ## Memory Layout
