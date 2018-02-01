@@ -1,5 +1,5 @@
 # dynarray
-A generic dynamic array implementation in C. A dynarray of type `T` can be passed to any function that operates on vanilla `T` arrays.
+A generic dynamic array implementation in C. A dynarray of type `T` can be passed to any function that operates on vanilla `T` arrays. Inspiration taken from [this article](https://solarianprogrammer.com/2017/01/08/c99-c11-dynamic-array-mimics-cpp-vector-api-improvements/) by [solarianprogrammer](https://solarianprogrammer.com/).
 
 ## Example Usage
 
