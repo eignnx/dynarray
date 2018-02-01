@@ -1,5 +1,5 @@
 # dynarray
-A generic dynamic array implementation in C.
+A generic dynamic array implementation in C. A dynarray of type `T` can be passed to any function that operates on vanilla `T` arrays.
 
 ## Example Usage
 
@@ -32,6 +32,6 @@ The array is heap-allocated and is prefixed with a three-field header containing
 
 Macros defined in [`dynarray.h`](dynarray.h) allow the `capacity`, `length`, and `stride` attributes to be accessed.
 
-The dynarray is referred to _only_ by a pointer to the first element in the buffer. This allows the dynarray to be passed to most functions that were meant to operate on normal C-arrays.
+A dynarray is referred to _only_ by a pointer to the first element in its buffer. **This allows a dynarray to be passed to any function that operates on regular C-arrays.**
 
 ![memory layout](images/dynarray-memory-layout.png)
