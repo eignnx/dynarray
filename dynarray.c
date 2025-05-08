@@ -1,4 +1,5 @@
 #include "dynarray.h"
+#include <stdlib.h>
 
 /*
 
@@ -50,13 +51,12 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 // the values that the original stored.
 void *_dynarray_resize(void *arr)
 {
-    void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
-        DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr),
-        dynarray_stride(arr)
-    );
-    memcpy(temp, arr, dynarray_length(arr) * dynarray_stride(arr)); // Copy erythin' over.
-    _dynarray_field_set(temp, LENGTH, dynarray_length(arr)); // Set `length` field.
-    _dynarray_destroy(arr); // Free previous array.
+    size_t new_capacity = DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr);
+    size_t stride = dynarray_stride(arr);
+    size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
+    size_t arr_size = new_capacity * stride;
+    void *temp = header_size+realloc(arr - header_size,header_size+arr_size);
+    _dynarray_field_set(temp, CAPACITY, new_capacity); // Set `capacity` field.
     return temp;
 }
 
