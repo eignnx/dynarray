@@ -64,8 +64,10 @@ void *_dynarray_resize(void *arr)
 
 void *_dynarray_push(void *arr, void *xptr)
 {
-    if (dynarray_length(arr) >= dynarray_capacity(arr))
+    if (dynarray_length(arr) >= dynarray_capacity(arr)) {
         arr = _dynarray_resize(arr);
+        if (arr == NULL) return NULL;
+    }
 
     memcpy(arr + dynarray_length(arr) * dynarray_stride(arr), xptr, dynarray_stride(arr));
     _dynarray_field_set(arr, LENGTH, dynarray_length(arr) + 1);
