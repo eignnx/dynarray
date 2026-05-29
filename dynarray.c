@@ -89,7 +89,17 @@ void _dynarray_pop(void *arr, void *dest)
 // Removes an element from the dynamic array and returns it via void *dest.
 // The removed element is replaced by the last element of the vector.
 void _dynarray_swap_remove(void *arr, size_t index, void *dest) {
+    size_t arr_size = dynarray_length(arr);
+    size_t stride = dynarray_stride(arr);
+    if (index >= arr_size) return;
 
+    // return removed value
+    memcpy(dest, arr + index * stride, stride);
+
+    // move value at back of array to index
+    memcpy(arr + index * stride, arr + (arr_size - 1) * stride, stride);
+
+    _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, arr_size - 1);
 }
 
 
