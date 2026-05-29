@@ -1,24 +1,55 @@
 #include "dynarray.h"
 
-/*
+/**
+ * @file dynarray.h
+ * @brief Dynamic array implementation with hidden metadata header.
+ *
+ * A dynamic array (dynarray) stores three internal metadata fields in a hidden header:
+ *
+ * - @b capacity: Number of elements (of size `stride`) allocated in the buffer.
+ * - @b length: Number of elements currently stored in the array.
+ * - @b stride: Size (in bytes) of each element stored in the array.
+ *
+ * The user-facing pointer returned by dynarray functions points to the first
+ * usable element, not the internal header.
+ *
+ * ## Accessing elements
+ *
+ * Elements can be accessed either via bracket notation:
+ * @code
+ * arr[i]
+ * @endcode
+ *
+ * or via safe accessor functions (e.g. `dynarray_get`) which perform bounds checking.
+ *
+ * Elements can be assigned using:
+ * @code
+ * arr[i] = value;
+ * @endcode
+ *
+ * or via `dynarray_set`, which also performs bounds checking.
+ *
+ * ## Design notes
+ *
+ * The header is stored immediately before the returned pointer in memory,
+ * allowing O(1) access to metadata fields while keeping the API pointer clean.
+ */
 
-Dynamic Array
-
-A dynarray has three hidden fields of type `size_t` stored in it's header:
-    - capacity: size in `stride`-sized units of the allocated buffer.
-    - length: the number of `stride`-sized units currently filled.
-    - stride: the sizeof the datatype being stored in the dynarray.
-
-To get the ith element in the array, you can use bracket notation (`arr[i]`),
-or the `dynarray_get` method which does bounds checking.
-
-To set the ith element of the array, use either bracket notation
-(`arr[i] = x;`), or the `dynarray_set` method which does bounds checking.
-*/
-
-// Returns a pointer to the start of a new dynarray (after the header) which
-// has `init_cap` units of `stride` bytes.
-// If reallocation fails the function will return NULL.
+/**
+ * @brief Creates a new dynamic array and its associated metadata.
+ *
+ * Allocates and initializes a new dynamic array with an initial capacity
+ * of @p init_cap elements, each of size @p stride bytes. The returned
+ * pointer refers to the start of the usable array memory (after the internal
+ * metadata header).
+ *
+ * @param init_cap Initial number of elements the array can hold.
+ * @param stride Size in bytes of თითო element in the array.
+ * @return Pointer to the newly created dynamic array, or NULL if allocation fails.
+ *
+ * @note The returned pointer does not point to the internal header; it points
+ *       directly to the array storage region.
+ */
 void *_dynarray_create(size_t init_cap, size_t stride)
 {
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
@@ -31,26 +62,75 @@ void *_dynarray_create(size_t init_cap, size_t stride)
     return (void *) (arr + DYNARRAY_FIELDS);
 }
 
+/**
+ * @brief Frees a dynamic array and its associated metadata.
+ *
+ * Deallocates the memory block associated with the dynamic array,
+ * including both the user-facing array data and the hidden metadata
+ * stored before the array pointer.
+ *
+ * @param arr Pointer to the dynamic array to be destroyed.
+ *
+ * @note This function does not modify the caller's pointer; it is the caller's
+ *       responsibility to set it to NULL if needed.
+ */
 void _dynarray_destroy(void *arr)
 {
     free(arr - DYNARRAY_FIELDS * sizeof(size_t));
 }
 
-// Returns the dynarray's field which is specified by passing
-// one of CAPACITY, LENGTH, STRIDE.
+/**
+ * @brief Retrieves a metadata field from a dynamic array.
+ *
+ * Returns a specific internal field of the dynamic array, selected via
+ * the `field` parameter.
+ *
+ * Valid fields include:
+ * - CAPACITY
+ * - LENGTH
+ * - STRIDE
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param field Identifier specifying which field to retrieve (CAPACITY, LENGTH, or STRIDE).
+ * @return Value of the requested field as a size_t.
+ */
 size_t _dynarray_field_get(void *arr, size_t field)
 {
     return ((size_t *)(arr) - DYNARRAY_FIELDS)[field];
 }
 
+/**
+ * @brief Sets a metadata field from a dynamic array.
+ *
+ * Sets a specific internal field of the dynamic array, selected via
+ * the `field` parameter.
+ *
+ * Valid fields include:
+ * - CAPACITY
+ * - LENGTH
+ * - STRIDE
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param field Identifier specifying which field to retrieve (CAPACITY, LENGTH, or STRIDE).
+ * @param value The value to set.
+ */
 void _dynarray_field_set(void *arr, size_t field, size_t value)
 {
     ((size_t *)(arr) - DYNARRAY_FIELDS)[field] = value;
 }
 
-// Allocates a new dynarray with twice the size of the one passed in, and retaining
-// the values that the original stored.
-// If reallocation fails the function will return NULL.
+
+/**
+ * @brief Resizes a dynamic array to double its current capacity.
+ *
+ * Allocates a new dynamic array with twice the size of the input array,
+ * copying over all values from the original array.
+ *
+ * @param arr Pointer to the original dynamic array.
+ * @return Pointer to the newly allocated array, or NULL if reallocation fails.
+ *
+ * @note On failure, the original array remains unchanged.
+ */
 void *_dynarray_resize(void *arr)
 {
     void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
@@ -64,9 +144,20 @@ void *_dynarray_resize(void *arr)
     return temp;
 }
 
-// Places a new value at the next available space.
-// If array is full then it will reallocate with a bigger size.
-// If reallocation fails the function will return NULL;
+/**
+ * @brief Appends a new element to the dynamic array.
+ *
+ * Inserts the value pointed to by @p xptr into the next available position
+ * in the dynamic array. If the array is full, it will be reallocated with
+ * increased capacity before insertion.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param xptr Pointer to the value to be inserted.
+ * @return Pointer to the (possibly reallocated) dynamic array, or NULL if
+ *         reallocation fails.
+ *
+ * @note If reallocation fails, the original array remains unchanged.
+ */
 void *_dynarray_push(void *arr, void *xptr)
 {
     if (dynarray_length(arr) >= dynarray_capacity(arr)) {
@@ -79,7 +170,18 @@ void *_dynarray_push(void *arr, void *xptr)
     return arr;
 }
 
-// Removes the last element in the array, but copies it to `*dest` first.
+/**
+ * @brief Removes the last element from the dynamic array.
+ *
+ * Pops the last element in the dynamic array and copies its value into
+ * the memory pointed by @p dest before removal.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param dest Pointer to memory where the removed elements will be stored.
+ *
+ * @note The caller must ensure @p dest points to a valid memory location
+ *       large enough to hold one element of the array's element type.
+ */
 void _dynarray_pop(void *arr, void *dest)
 {
     memcpy(dest, arr + (dynarray_length(arr) - 1) * dynarray_stride(arr), dynarray_stride(arr));
