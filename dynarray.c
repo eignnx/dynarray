@@ -100,7 +100,8 @@ void _dynarray_pop(void *arr, void *dest)
  * @note The caller must ensure @p dest points to a valid memory location
  *       large enough to hold one element of the array's element type.
  */
-void _dynarray_swap_remove(void *arr, size_t index, void *dest) {
+void _dynarray_swap_remove(void *arr, size_t index, void *dest)
+{
     size_t arr_size = dynarray_length(arr);
     size_t stride = dynarray_stride(arr);
     if (index >= arr_size) return;
