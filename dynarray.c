@@ -18,11 +18,13 @@ To set the ith element of the array, use either bracket notation
 
 // Returns a pointer to the start of a new dynarray (after the header) which
 // has `init_cap` units of `stride` bytes.
+// If reallocation fails the function will return NULL.
 void *_dynarray_create(size_t init_cap, size_t stride)
 {
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
     size_t arr_size = init_cap * stride;
     size_t *arr = (size_t *) malloc(header_size + arr_size);
+    if (arr == NULL) return NULL; // propagate failure
     arr[CAPACITY] = init_cap;
     arr[LENGTH] = 0;
     arr[STRIDE] = stride;
@@ -48,21 +50,29 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 
 // Allocates a new dynarray with twice the size of the one passed in, and retaining
 // the values that the original stored.
+// If reallocation fails the function will return NULL.
 void *_dynarray_resize(void *arr)
 {
     size_t new_capacity = DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr);
     size_t stride = dynarray_stride(arr);
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
     size_t arr_size = new_capacity * stride;
-    void *temp = header_size+realloc(arr - header_size,header_size+arr_size);
+    void *temp = realloc(arr - header_size, header_size + arr_size);
+    if (temp == NULL) return NULL; // propagate failure
+    temp += header_size;
     _dynarray_field_set(temp, CAPACITY, new_capacity); // Set `capacity` field.
     return temp;
 }
 
+// Places a new value at the next available space.
+// If array is full then it will reallocate with a bigger size.
+// If reallocation fails the function will return NULL;
 void *_dynarray_push(void *arr, void *xptr)
 {
-    if (dynarray_length(arr) >= dynarray_capacity(arr))
+    if (dynarray_length(arr) >= dynarray_capacity(arr)) {
         arr = _dynarray_resize(arr);
+        if (arr == NULL) return NULL;
+    }
 
     memcpy(arr + dynarray_length(arr) * dynarray_stride(arr), xptr, dynarray_stride(arr));
     _dynarray_field_set(arr, LENGTH, dynarray_length(arr) + 1);
