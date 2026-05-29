@@ -11,7 +11,7 @@
  * void *memory
  */
 
-enum dynarray_field_offset {
+enum dynarray_fields {
     DYNARRAY_CAPACITY_FIELD,
     DYNARRAY_LENGTH_FIELD,
     DYNARRAY_STRIDE_FIELD,
