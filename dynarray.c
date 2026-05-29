@@ -36,6 +36,12 @@
  */
 
 /**
+ * @defgroup dynarray_internal Internal Implementation
+ * @brief Low-level helpers (not for user use).
+ */
+
+/**
+ * @ingroup dynarray_internal
  * @brief Creates a new dynamic array and its associated metadata.
  *
  * Allocates and initializes a new dynamic array with an initial capacity
@@ -63,6 +69,7 @@ void *_dynarray_create(size_t init_cap, size_t stride)
 }
 
 /**
+ * @ingroup dynarray_internal
  * @brief Frees a dynamic array and its associated metadata.
  *
  * Deallocates the memory block associated with the dynamic array,
@@ -80,6 +87,7 @@ void _dynarray_destroy(void *arr)
 }
 
 /**
+ * @ingroup dynarray_internal
  * @brief Retrieves a metadata field from a dynamic array.
  *
  * Returns a specific internal field of the dynamic array, selected via
@@ -100,6 +108,7 @@ size_t _dynarray_field_get(void *arr, size_t field)
 }
 
 /**
+ * @ingroup dynarray_internal
  * @brief Sets a metadata field from a dynamic array.
  *
  * Sets a specific internal field of the dynamic array, selected via
@@ -121,6 +130,7 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 
 
 /**
+ * @ingroup dynarray_internal
  * @brief Resizes a dynamic array to double its current capacity.
  *
  * Allocates a new dynamic array with twice the size of the input array,
@@ -145,6 +155,7 @@ void *_dynarray_resize(void *arr)
 }
 
 /**
+ * @ingroup dynarray_internal
  * @brief Appends a new element to the dynamic array.
  *
  * Inserts the value pointed to by @p xptr into the next available position
@@ -171,6 +182,7 @@ void *_dynarray_push(void *arr, void *xptr)
 }
 
 /**
+ * @ingroup dynarray_internal
  * @brief Removes the last element from the dynamic array.
  *
  * Pops the last element in the dynamic array and copies its value into
