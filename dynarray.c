@@ -53,14 +53,14 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 // If reallocation fails the function will return NULL.
 void *_dynarray_resize(void *arr)
 {
-    void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
-        DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr),
-        dynarray_stride(arr)
-    );
+    size_t new_capacity = DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr);
+    size_t stride = dynarray_stride(arr);
+    size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
+    size_t arr_size = new_capacity * stride;
+    void *temp = realloc(arr - header_size, header_size + arr_size);
     if (temp == NULL) return NULL; // propagate failure
-    memcpy(temp, arr, dynarray_length(arr) * dynarray_stride(arr)); // Copy erythin' over.
-    _dynarray_field_set(temp, DYNARRAY_LENGTH_FIELD, dynarray_length(arr)); // Set `length` field.
-    _dynarray_destroy(arr); // Free previous array.
+    temp += header_size;
+    _dynarray_field_set(temp, DYNARRAY_CAPACITY_FIELD, new_capacity); // Set `capacity` field.
     return temp;
 }
 
