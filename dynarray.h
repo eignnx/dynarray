@@ -11,10 +11,10 @@
  * void *memory
  */
 
-enum {
-    CAPACITY,
-    LENGTH,
-    STRIDE,
+enum dynarray_field_offset {
+    DYNARRAY_CAPACITY_FIELD,
+    DYNARRAY_LENGTH_FIELD,
+    DYNARRAY_STRIDE_FIELD,
     DYNARRAY_FIELDS
 };
 
