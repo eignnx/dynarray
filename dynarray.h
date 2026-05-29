@@ -177,8 +177,28 @@ void _dynarray_pop(void *arr, void *dest);
  */
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
 
+/**
+ * @brief Returns the capacity of elements in the dynamic array.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @return The capacity of elements.
+ */
 #define dynarray_capacity(arr) _dynarray_field_get(arr, DYNARRAY_CAPACITY_FIELD)
+
+/**
+ * @brief Returns the number of elements in the dynamic array.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @return The number of elements.
+ */
 #define dynarray_length(arr) _dynarray_field_get(arr, DYNARRAY_LENGTH_FIELD)
+
+/**
+ * @brief Returns the size of elements in the dynamic array.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @return The size of elements.
+ */
 #define dynarray_stride(arr) _dynarray_field_get(arr, DYNARRAY_STRIDE_FIELD)
 
 #endif // DYNARRAY
