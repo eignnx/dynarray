@@ -23,6 +23,7 @@ void *_dynarray_create(size_t init_cap, size_t stride)
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
     size_t arr_size = init_cap * stride;
     size_t *arr = (size_t *) malloc(header_size + arr_size);
+    if (arr == NULL) return NULL; // propagate failure
     arr[CAPACITY] = init_cap;
     arr[LENGTH] = 0;
     arr[STRIDE] = stride;
@@ -54,6 +55,7 @@ void *_dynarray_resize(void *arr)
         DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr),
         dynarray_stride(arr)
     );
+    if (temp == NULL) return NULL; // propagate failure
     memcpy(temp, arr, dynarray_length(arr) * dynarray_stride(arr)); // Copy erythin' over.
     _dynarray_field_set(temp, LENGTH, dynarray_length(arr)); // Set `length` field.
     _dynarray_destroy(arr); // Free previous array.
