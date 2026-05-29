@@ -62,9 +62,9 @@ void *_dynarray_create(size_t init_cap, size_t stride)
     size_t arr_size = init_cap * stride;
     size_t *arr = (size_t *) malloc(header_size + arr_size);
     if (arr == NULL) return NULL; // propagate failure
-    arr[CAPACITY] = init_cap;
-    arr[LENGTH] = 0;
-    arr[STRIDE] = stride;
+    arr[DYNARRAY_CAPACITY_FIELD] = init_cap;
+    arr[DYNARRAY_LENGTH_FIELD] = 0;
+    arr[DYNARRAY_STRIDE_FIELD] = stride;
     return (void *) (arr + DYNARRAY_FIELDS);
 }
 
@@ -143,14 +143,14 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
  */
 void *_dynarray_resize(void *arr)
 {
-    void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
-        DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr),
-        dynarray_stride(arr)
-    );
+    size_t new_capacity = DYNARRAY_RESIZE_FACTOR * dynarray_capacity(arr);
+    size_t stride = dynarray_stride(arr);
+    size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
+    size_t arr_size = new_capacity * stride;
+    void *temp = realloc(arr - header_size, header_size + arr_size);
     if (temp == NULL) return NULL; // propagate failure
-    memcpy(temp, arr, dynarray_length(arr) * dynarray_stride(arr)); // Copy erythin' over.
-    _dynarray_field_set(temp, LENGTH, dynarray_length(arr)); // Set `length` field.
-    _dynarray_destroy(arr); // Free previous array.
+    temp += header_size;
+    _dynarray_field_set(temp, DYNARRAY_CAPACITY_FIELD, new_capacity); // Set `capacity` field.
     return temp;
 }
 
@@ -177,7 +177,7 @@ void *_dynarray_push(void *arr, void *xptr)
     }
 
     memcpy(arr + dynarray_length(arr) * dynarray_stride(arr), xptr, dynarray_stride(arr));
-    _dynarray_field_set(arr, LENGTH, dynarray_length(arr) + 1);
+    _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, dynarray_length(arr) + 1);
     return arr;
 }
 
@@ -197,7 +197,7 @@ void *_dynarray_push(void *arr, void *xptr)
 void _dynarray_pop(void *arr, void *dest)
 {
     memcpy(dest, arr + (dynarray_length(arr) - 1) * dynarray_stride(arr), dynarray_stride(arr));
-    _dynarray_field_set(arr, LENGTH, dynarray_length(arr) - 1); // Decrement length.
+    _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, dynarray_length(arr) - 1); // Decrement length.
 }
 
 
