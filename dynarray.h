@@ -86,22 +86,95 @@ void _dynarray_pop(void *arr, void *dest);
 #define DYNARRAY_RESIZE_FACTOR 2
 
 /**
- * @brief 
+ * @brief Creates a new dynamic array.
  *
- * @param type
+ * Allocates and initializes a new dynamic array with an initial capacity of DYNARRAY_DEFAULT_CAP elements,
+ * each the size of the element type.
+ * The returned pointer refers to the start of the usable array memory
+ *
+ * @param type Type of elements in array.
+ * @return Pointer to the newly created dynamic array, or NULL if allocation fails.
  */
 #define dynarray_create(type) _dynarray_create(DYNARRAY_DEFAULT_CAP, sizeof(type))
 
+/**
+ * @brief Creates a new dynamic array with custom size.
+ *
+ * Allocates and initializes a new dynamic array with an initial capacity of @p capacity elements,
+ * each the size of the element type.
+ * The returned pointer refers to the start of the usable array memory
+ *
+ * @param type Type of elements in array.
+ * @param capacity Initial number of elements the array can hold.
+ * @return Pointer to the newly created dynamic array, or NULL if allocation fails.
+ */
 #define dynarray_create_prealloc(type, capacity) _dynarray_create(capacity, sizeof(type))
+
+/**
+ * @brief Frees a dynamic array.
+ *
+ * Deallocates the memory block associated with the dynamic array.
+ *
+ * @param arr Pointer to the dynamic array to be destroyed.
+ *
+ * @note This function does not modify the caller's pointer; it is the caller's
+ *       responsibility to set it to NULL if needed.
+ */
 #define dynarray_destroy(arr) _dynarray_destroy(arr)
 
+/**
+ * @brief Appends a new element to the dynamic array.
+ *
+ * Inserts the value pointed to by @p x into the next available position
+ * in the dynamic array. If the array is full, it will be reallocated with
+ * increased capacity before insertion.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param x Pointer to the value to be inserted.
+ * @return Pointer to the (possibly reallocated) dynamic array, or NULL if
+ *         reallocation fails.
+ *
+ * @note If reallocation fails, the original array remains unchanged.
+ */
 #define dynarray_push(arr, x) arr = _dynarray_push(arr, &x)
+
+/**
+ * @brief Appends a value expression to the dynamic array.
+ *
+ * Evaluates @p x and inserts a copy of that value into the next available position in the dynamic
+ * array. If the array is full, it will be reallocated with increased capacity before insertion.
+ *
+ * Unlike ::dynarray_push, this macro accepts rvalues and arbitrary
+ * expressions, including literals, function calls, and computed values.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param x Value or expression to be inserted.
+ *
+ * @note The expression @p x is evaluated exactly once.
+ *
+ * @note Array expressions passed as @p x undergo array-to-pointer decay,
+ *       which may produce different behavior compared to ::dynarray_push.
+ *
+ * @note If reallocation fails, the original array remains unchanged.
+ */
 #define dynarray_push_rval(arr, x) \
     do { \
         __auto_type temp = x; \
         arr = _dynarray_push(arr, &temp); \
     } while (0)
 
+/**
+ * @brief Removes the last element from the dynamic array.
+ *
+ * Pops the last element in the dynamic array and copies its value into
+ * the memory pointed by @p xptr before removal.
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param xptr Pointer to memory where the removed elements will be stored.
+ *
+ * @note The caller must ensure @p xptr points to a valid memory location
+ *       large enough to hold one element of the array's element type.
+ */
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
 
 #define dynarray_capacity(arr) _dynarray_field_get(arr, CAPACITY)
