@@ -28,6 +28,7 @@ void *_dynarray_resize(void *arr);
 
 void *_dynarray_push(void *arr, void *xptr);
 void _dynarray_pop(void *arr, void *dest);
+void _dynarray_swap_remove(void *arr, size_t index, void *dest);
 
 #define DYNARRAY_DEFAULT_CAP 1
 #define DYNARRAY_RESIZE_FACTOR 2
