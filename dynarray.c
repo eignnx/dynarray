@@ -86,8 +86,20 @@ void _dynarray_pop(void *arr, void *dest)
     _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, dynarray_length(arr) - 1); // Decrement length.
 }
 
-// Removes an element from the dynamic array and returns it via void *dest.
-// The removed element is replaced by the last element of the vector.
+/**
+ * @ingroup dynarray_internal
+ * @brief Removes an element from the vector and returns it.
+ *
+ * The removed element is replaced by the last element of the vector.
+ * This does not preserve ordering of the remaining elements
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param index Element in the array.
+ * @param dest Pointer to memory where the removed elements will be stored.
+ *
+ * @note The caller must ensure @p dest points to a valid memory location
+ *       large enough to hold one element of the array's element type.
+ */
 void _dynarray_swap_remove(void *arr, size_t index, void *dest) {
     size_t arr_size = dynarray_length(arr);
     size_t stride = dynarray_stride(arr);
