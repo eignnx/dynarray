@@ -50,7 +50,7 @@
  * metadata header).
  *
  * @param init_cap Initial number of elements the array can hold.
- * @param stride Size in bytes of თითო element in the array.
+ * @param stride Size in bytes of the elements in the array.
  * @return Pointer to the newly created dynamic array, or NULL if allocation fails.
  *
  * @note The returned pointer does not point to the internal header; it points
