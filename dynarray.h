@@ -45,6 +45,7 @@ void _dynarray_swap_remove(void *arr, size_t index, void *dest);
     } while (0)
 
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
+#define dynarray_swap_remove(arr, idx, xptr) _dynarray_swap_remove(arr, idx, xptr)
 
 #define dynarray_capacity(arr) _dynarray_field_get(arr, DYNARRAY_CAPACITY_FIELD)
 #define dynarray_length(arr) _dynarray_field_get(arr, DYNARRAY_LENGTH_FIELD)
