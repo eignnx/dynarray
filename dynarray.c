@@ -18,6 +18,7 @@ To set the ith element of the array, use either bracket notation
 
 // Returns a pointer to the start of a new dynarray (after the header) which
 // has `init_cap` units of `stride` bytes.
+// If reallocation fails the function will return NULL.
 void *_dynarray_create(size_t init_cap, size_t stride)
 {
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
@@ -49,6 +50,7 @@ void _dynarray_field_set(void *arr, size_t field, size_t value)
 
 // Allocates a new dynarray with twice the size of the one passed in, and retaining
 // the values that the original stored.
+// If reallocation fails the function will return NULL.
 void *_dynarray_resize(void *arr)
 {
     void *temp = _dynarray_create( // Allocate new dynarray w/ more space.
@@ -62,6 +64,9 @@ void *_dynarray_resize(void *arr)
     return temp;
 }
 
+// Places a new value at the next available space.
+// If array is full then it will reallocate with a bigger size.
+// If reallocation fails the function will return NULL;
 void *_dynarray_push(void *arr, void *xptr)
 {
     if (dynarray_length(arr) >= dynarray_capacity(arr)) {
