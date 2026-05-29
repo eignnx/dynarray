@@ -45,6 +45,20 @@ void _dynarray_swap_remove(void *arr, size_t index, void *dest);
     } while (0)
 
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
+
+/**
+ * @brief Removes an element from the vector and returns it.
+ *
+ * The removed element is replaced by the last element of the vector.
+ * This does not preserve ordering of the remaining elements
+ *
+ * @param arr Pointer to the dynamic array.
+ * @param idx Element in the array.
+ * @param xptr Pointer to memory where the removed elements will be stored.
+ *
+ * @note The caller must ensure @p xptr points to a valid memory location
+ *       large enough to hold one element of the array's element type.
+ */
 #define dynarray_swap_remove(arr, idx, xptr) _dynarray_swap_remove(arr, idx, xptr)
 
 #define dynarray_capacity(arr) _dynarray_field_get(arr, DYNARRAY_CAPACITY_FIELD)
