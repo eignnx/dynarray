@@ -31,23 +31,6 @@ void *_dynarray_create(size_t init_cap, size_t stride)
     return (void *) (arr + DYNARRAY_FIELDS);
 }
 
-void _dynarray_destroy(void *arr)
-{
-    free(arr - DYNARRAY_FIELDS * sizeof(size_t));
-}
-
-// Returns the dynarray's field which is specified by passing
-// one of CAPACITY, LENGTH, STRIDE.
-size_t _dynarray_field_get(void *arr, size_t field)
-{
-    return ((size_t *)(arr) - DYNARRAY_FIELDS)[field];
-}
-
-void _dynarray_field_set(void *arr, size_t field, size_t value)
-{
-    ((size_t *)(arr) - DYNARRAY_FIELDS)[field] = value;
-}
-
 // Allocates a new dynarray with twice the size of the one passed in, and retaining
 // the values that the original stored.
 // If reallocation fails the function will return NULL.
@@ -57,10 +40,11 @@ void *_dynarray_resize(void *arr)
     size_t stride = dynarray_stride(arr);
     size_t header_size = DYNARRAY_FIELDS * sizeof(size_t);
     size_t arr_size = new_capacity * stride;
-    void *temp = realloc(arr - header_size, header_size + arr_size);
+    void *temp = realloc((arr) - header_size, header_size + arr_size);
     if (temp == NULL) return NULL; // propagate failure
     temp += header_size;
-    _dynarray_field_set(temp, DYNARRAY_CAPACITY_FIELD, new_capacity); // Set `capacity` field.
+    size_t *field_capacity = _dynarray_field_at(temp, DYNARRAY_CAPACITY_FIELD);
+    *field_capacity = new_capacity; 
     return temp;
 }
 
@@ -69,21 +53,27 @@ void *_dynarray_resize(void *arr)
 // If reallocation fails the function will return NULL;
 void *_dynarray_push(void *arr, void *xptr)
 {
+    if(arr == NULL || xptr == NULL) return NULL;
+
     if (dynarray_length(arr) >= dynarray_capacity(arr)) {
         arr = _dynarray_resize(arr);
         if (arr == NULL) return NULL;
     }
 
     memcpy(arr + dynarray_length(arr) * dynarray_stride(arr), xptr, dynarray_stride(arr));
-    _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, dynarray_length(arr) + 1);
+    size_t *length_field = _dynarray_field_at(arr, DYNARRAY_LENGTH_FIELD);
+    *length_field += 1;
     return arr;
 }
 
 // Removes the last element in the array, but copies it to `*dest` first.
 void _dynarray_pop(void *arr, void *dest)
 {
+    if(arr == NULL || dest == NULL) return;
+
     memcpy(dest, arr + (dynarray_length(arr) - 1) * dynarray_stride(arr), dynarray_stride(arr));
-    _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, dynarray_length(arr) - 1); // Decrement length.
+    size_t *length_field = _dynarray_field_at(arr, DYNARRAY_LENGTH_FIELD); // Decrement length.
+    *length_field -= 1;
 }
 
 

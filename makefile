@@ -3,8 +3,8 @@ build: dynarray.o
 test: tests/tests.c dynarray.o
 	cp dynarray.o tests/
 	cp dynarray.h tests/
-	clang -g $^ -o out/tests
-	out/tests
+	clang -g $^ -o tests/out
+	tests/out
 
 dynarray.o: dynarray.c dynarray.h
 	clang -g -c dynarray.c -o dynarray.o
