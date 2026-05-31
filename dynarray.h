@@ -64,7 +64,7 @@
  * void *memory
  */
 
-enum dynarray_field_offset {
+enum dynarray_fields {
     DYNARRAY_CAPACITY_FIELD,
     DYNARRAY_LENGTH_FIELD,
     DYNARRAY_STRIDE_FIELD,
@@ -81,6 +81,7 @@ void *_dynarray_resize(void *arr);
 
 void *_dynarray_push(void *arr, void *xptr);
 void _dynarray_pop(void *arr, void *dest);
+void _dynarray_swap_remove(void *arr, size_t index, void *dest);
 
 #define DYNARRAY_DEFAULT_CAP 1
 #define DYNARRAY_RESIZE_FACTOR 2
@@ -178,11 +179,20 @@ void _dynarray_pop(void *arr, void *dest);
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
 
 /**
- * @brief Returns the capacity of elements in the dynamic array.
+ * @brief Removes an element from the vector and returns it.
+ *
+ * The removed element is replaced by the last element of the vector.
+ * This does not preserve ordering of the remaining elements
  *
  * @param arr Pointer to the dynamic array.
- * @return The capacity of elements.
+ * @param idx Element in the array.
+ * @param xptr Pointer to memory where the removed elements will be stored.
+ *
+ * @note The caller must ensure @p xptr points to a valid memory location
+ *       large enough to hold one element of the array's element type.
  */
+#define dynarray_swap_remove(arr, idx, xptr) _dynarray_swap_remove(arr, idx, xptr)
+
 #define dynarray_capacity(arr) _dynarray_field_get(arr, DYNARRAY_CAPACITY_FIELD)
 
 /**
