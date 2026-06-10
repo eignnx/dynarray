@@ -1,15 +1,32 @@
-build: dynarray.o
+CC ?= cc
+CFLAGS += -Wall -Wextra -g
+CPPFLAGS += -I.
 
-test: tests/tests.c dynarray.o
-	cp dynarray.o tests/
-	cp dynarray.h tests/
-	clang -g $^ -o out/tests
-	out/tests
+OUT_DIR = out
+TEST_OUT = $(OUT_DIR)/tests
 
-dynarray.o: dynarray.c dynarray.h
-	clang -g -c dynarray.c -o dynarray.o
+SRCS = dynarray.c
+OBJS = $(SRCS:.c=.o)
+
+.PHONY: all clean test build
+
+all: build
+
+build: $(OBJS)
+
+test: $(TEST_OUT)
+	./$(TEST_OUT)
+
+$(TEST_OUT): tests/tests.c $(OBJS) | $(OUT_DIR)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@
+
+%.o: %.c %.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)
 
 clean:
-	rm -fv *.o
-	rm -rfv out/**
-	rm -fv tests/dynarray.*
+	rm -fv $(OBJS)
+	rm -rf $(OUT_DIR)
+	rm -fv tests/dynarray.o tests/dynarray.h
