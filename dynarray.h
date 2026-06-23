@@ -83,6 +83,9 @@ void *_dynarray_push(void *arr, void *xptr);
 void _dynarray_pop(void *arr, void *dest);
 void _dynarray_swap_remove(void *arr, size_t index, void *dest);
 
+const void *dynarray_get(void *arr, size_t index);
+void *_dynarray_set(void *arr, size_t index, void *new_value);
+
 #define DYNARRAY_DEFAULT_CAP 1
 #define DYNARRAY_RESIZE_FACTOR 2
 
@@ -164,6 +167,23 @@ void _dynarray_swap_remove(void *arr, size_t index, void *dest);
         arr = _dynarray_push(arr, &temp); \
     } while (0)
 
+
+/**
+ * @brief Modifies the value of an element at a given index in the dynamic array to a newly given value.
+ * @param arr Initialized dynamic array instance.
+ * @param index Element index in the array.
+ * @param new_value New value of the element at the given index
+ * @return Pointer to the modified array element, or NULL if the operation fails.
+ */
+#define dynarray_set(arr, index, new_value) ({ \
+    void *_ret = NULL; \
+    __auto_type _new_value = (new_value); \
+    if(__builtin_types_compatible_p(__typeof__(*(arr)), __typeof__((new_value))) == 1) \
+    { \
+        _ret = _dynarray_set((arr), (index), &_new_value); \
+    } \
+    _ret; \
+})
 /**
  * @brief Removes the last element from the dynamic array.
  *

@@ -1,4 +1,5 @@
 #include "dynarray.h"
+#include<stdio.h>
 
 /**
  * @file dynarray.h
@@ -229,4 +230,33 @@ void _dynarray_swap_remove(void *arr, size_t index, void *dest)
     _dynarray_field_set(arr, DYNARRAY_LENGTH_FIELD, arr_size - 1);
 }
 
+/**
+ * @brief Retrieves an element at a given index from a dynamic array
+ * @param arr Initialized dynamic array instance.
+ * @param index Index of an element to retrieve.
+ * @return Pointer to the array element, or NULL if the operation fails.
+ *
+ */
+const void *dynarray_get(void *arr, size_t index)
+{
+    if(arr == NULL || index > dynarray_length(arr)) return NULL;
+    return (void *)((char *)arr + index * dynarray_stride(arr));
+}
+
+/**
+ * @ingroup dynarray_internal
+ * @brief Modifies the value of an element at a given index in the dynamic array to a newly given value.
+ * @param arr Initialized dynamic array instance.
+ * @param index Element index in the array.
+ * @param new_value New value of the element at the given index (must be lvalue)
+ * @return Pointer to the modified array element, or NULL if the operation fails.
+ *
+ */
+void *_dynarray_set(void *arr, size_t index, void *new_value)
+{
+    const void *arr_field = dynarray_get(arr, index);
+    if(arr_field == NULL) return NULL;
+
+    return memcpy(arr + index, new_value, dynarray_stride(arr));
+}
 
