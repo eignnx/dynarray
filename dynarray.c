@@ -1,5 +1,4 @@
 #include "dynarray.h"
-#include<stdio.h>
 
 /**
  * @file dynarray.h
