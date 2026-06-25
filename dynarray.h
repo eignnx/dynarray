@@ -167,23 +167,33 @@ void *_dynarray_set(void *arr, size_t index, void *new_value);
         arr = _dynarray_push(arr, &temp); \
     } while (0)
 
-
 /**
  * @brief Modifies the value of an element at a given index in the dynamic array to a newly given value.
  * @param arr Initialized dynamic array instance.
  * @param index Element index in the array.
- * @param new_value New value of the element at the given index
+ * @param new_value New value of the element at the given index, which is strictly an lvalue.
  * @return Pointer to the modified array element, or NULL if the operation fails.
+ * @note The caller must ensure @p arr points to a valid memory location containing a dynamic array.
  */
-#define dynarray_set(arr, index, new_value) ({ \
-    void *_ret = NULL; \
+#define dynarray_set(arr, index, new_value) _dynarray_set(arr, index, &new_value)
+
+/**
+ * @brief Modifies the value of an element at a given index in the dynamic array to a newly given value.
+ * Unlike dynarray_set, this macro accepts rvalues and arbitrary
+ * expressions, including literals, function calls, and computed values.
+ * @param arr Initialized dynamic array instance.
+ * @param index Element index in the array.
+ * @param new_value New value of the element at the given index.
+ * @return Pointer to the modified array element, or NULL if the operation fails.
+ * @note The caller must ensure @p arr points to a valid memory location containing a dynamic array.
+ */
+#define dynarray_set_rval(arr, index, new_value) ({ \
     __auto_type _new_value = (new_value); \
-    if(__builtin_types_compatible_p(__typeof__(*(arr)), __typeof__((new_value))) == 1) \
-    { \
-        _ret = _dynarray_set((arr), (index), &_new_value); \
-    } \
-    _ret; \
+    extern void dynarray_set_rval(void) __attribute__((error("Type of new_value does not match the type of the dynamic array elements"))); \
+    if (__builtin_types_compatible_p(__typeof__(*(arr)), __typeof__((new_value))) == 0) dynarray_set_rval(); \
+    _dynarray_set((arr), (index), &_new_value); \
 })
+
 /**
  * @brief Removes the last element from the dynamic array.
  *
