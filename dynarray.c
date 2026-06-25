@@ -256,6 +256,7 @@ void *_dynarray_set(void *arr, size_t index, void *new_value)
     const void *arr_field = dynarray_get(arr, index);
     if(arr_field == NULL) return NULL;
 
-    return memcpy(arr + index, new_value, dynarray_stride(arr));
+    size_t stride = dynarray_stride(arr);
+    return memcpy(arr + index * stride, new_value, stride);
 }
 
