@@ -230,15 +230,15 @@ void _dynarray_swap_remove(void *arr, size_t index, void *dest)
 }
 
 /**
- * @brief Retrieves an element at a given index from a dynamic array
+ * @brief Retrieves an element at a given index from a dynamic array.
  * @param arr Initialized dynamic array instance.
  * @param index Index of an element to retrieve.
  * @return Pointer to the array element, or NULL if the operation fails.
- *
+ * @note The caller must ensure @p arr points to a valid memory location containing a dynamic array.
  */
 const void *dynarray_get(void *arr, size_t index)
 {
-    if(arr == NULL || index > dynarray_length(arr)) return NULL;
+    if(index > dynarray_length(arr)) return NULL;
     return (void *)((char *)arr + index * dynarray_stride(arr));
 }
 
