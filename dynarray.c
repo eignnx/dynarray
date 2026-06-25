@@ -249,7 +249,7 @@ const void *dynarray_get(void *arr, size_t index)
  * @param index Element index in the array.
  * @param new_value New value of the element at the given index (must be lvalue)
  * @return Pointer to the modified array element, or NULL if the operation fails.
- *
+ * @note The caller must ensure @p arr points to a valid memory location containing a dynamic array.
  */
 void *_dynarray_set(void *arr, size_t index, void *new_value)
 {
